@@ -95,6 +95,22 @@ envSecrets: {}
 secretEnv:
   data: {}
 
+livenessProbe:
+  enabled: true
+  path: /healthz
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 1
+  failureThreshold: 3
+
+readinessProbe:
+  enabled: true
+  path: /healthz
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  timeoutSeconds: 1
+  failureThreshold: 3
+
 # Configuration file contents for mcpo. Values will be rendered as JSON in
 # `config.json` and mounted to the container.
 config:
