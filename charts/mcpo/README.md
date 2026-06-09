@@ -85,9 +85,10 @@ When `ingress.path` is not `/`, the annotation `nginx.ingress.kubernetes.io/use-
 
 ### Configuration file
 
-| Name      | Description                                         | Value |
-| --------- | --------------------------------------------------- | ----- |
-| `config`  | Structure used to generate `config.json`            | `see values.yaml` |
+| Name                   | Description                                         | Value |
+| ---------------------- | --------------------------------------------------- | ----- |
+| `config`               | Structure used to generate `config.json`            | `see values.yaml` |
+| `existingConfigSecret` | Name of a pre-existing Secret (key `config.json`) used as the mcpo config instead of rendering `config` into a ConfigMap. When set, `config` is ignored and no ConfigMap is created. | `""` |
 
 Default `config` structure:
 
@@ -120,6 +121,29 @@ ConfigMap and starts the container with `--config /opt/mcpo/config.json`.
 `config.json` is generated from the `config` values found in `values.yaml`. The
 default configuration defines a single MCP server, but you can customize this to
 define multiple servers by editing the `config` section.
+
+### Sensitive config (`existingConfigSecret`)
+
+mcpo reads its whole configuration from `config.json` and does **not** expand
+environment variables inside it, so any secret it carries (e.g. an
+`Authorization: Bearer …` header for an upstream MCP server) would otherwise end
+up verbatim in a plaintext ConfigMap. To keep such values out of a ConfigMap (and
+out of git), provide the full config as a pre-existing Secret and point the chart
+at it:
+
+```bash
+# 1. Build config.json with the real secret(s) and create the Secret out-of-band:
+kubectl create secret generic mcpo-secrets \
+  --from-file=config.json=./config.json
+
+# 2. Reference it from values:
+#    existingConfigSecret: mcpo-secrets
+```
+
+When `existingConfigSecret` is set the chart skips the ConfigMap entirely and
+mounts `config.json` from that Secret at `/opt/mcpo/config.json`. The Secret is
+not managed by the chart — create and rotate it yourself. Because the config is
+external, changing it requires a pod restart for mcpo to pick it up.
 
 ### Exposing the application
 

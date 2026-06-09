@@ -14,7 +14,9 @@ spec:
   template:
     metadata:
       annotations:
+        {{- if not .Values.existingConfigSecret }}
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- end }}
         {{- if .Values.secretEnv.data }}
         checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
         {{- end }}
@@ -109,5 +111,10 @@ spec:
       {{- end }}
       volumes:
         - name: config
+          {{- if .Values.existingConfigSecret }}
+          secret:
+            secretName: {{ .Values.existingConfigSecret }}
+          {{- else }}
           configMap:
             name: {{ include "mcp-mcpo-helm.fullname" . }}
+          {{- end }}

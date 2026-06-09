@@ -95,8 +95,18 @@ envSecrets: {}
 secretEnv:
   data: {}
 
+# Use a pre-existing Secret as the mcpo config instead of rendering `config`
+# (below) into a ConfigMap. The Secret must contain a `config.json` key with the
+# full mcpo configuration. When set, `config` is ignored and no ConfigMap is
+# created. Use this when config.json carries sensitive data (e.g. Authorization
+# headers / API tokens) that must not live in a plaintext ConfigMap or in git.
+# The Secret is NOT managed by this chart — create it out-of-band.
+#   kubectl create secret generic mcpo-secrets --from-file=config.json=./config.json
+existingConfigSecret: ""
+
 # Configuration file contents for mcpo. Values will be rendered as JSON in
-# `config.json` and mounted to the container.
+# `config.json` and mounted to the container. Ignored when `existingConfigSecret`
+# is set.
 config:
   mcpServers:
     memory:
