@@ -107,3 +107,24 @@ envSecrets: {}
 secretEnv:
   data: {}
     # GITLAB_TOKEN: "your-gitlab-token-base64-encoded"
+
+# Additional sidecar containers rendered verbatim into the pod (template
+# expressions are evaluated). Each entry accepts any fields allowed in the
+# Kubernetes `Container` spec such as `command`, `args`, `env`, `ports`,
+# or `volumeMounts`.
+# Example:
+# sidecars:
+#   - name: sidecar
+#     image: busybox
+#     command: ["sh", "-c", "echo sidecar && sleep 3600"]
+sidecars: []
+
+# Static /etc/hosts entries for the pod — useful when the GitLab hostname
+# is only resolvable by a DNS server the cluster cannot reach (e.g. behind
+# a VPN reached via a sidecar).
+# Example:
+# hostAliases:
+#   - ip: 10.0.0.5
+#     hostnames:
+#       - gitlab.internal.example.com
+hostAliases: []
