@@ -83,14 +83,14 @@ spec:
               subPath: config.json
           livenessProbe:
             httpGet:
-              path: /openapi.json
+              path: /healthz
               port: http
               scheme: HTTP
             initialDelaySeconds: 30
             periodSeconds: 10
           readinessProbe:
             httpGet:
-              path: /openapi.json
+              path: /healthz
               port: http
               scheme: HTTP
             initialDelaySeconds: 5
